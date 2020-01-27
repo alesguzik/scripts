@@ -1,0 +1,17 @@
+#!/bin/sh
+INTERVAL="$((5*60))"
+while true; do
+  basedir="$HOME/Pictures/screenlog"
+  dir="$basedir/$(date '+%Y-%m-%d_%A')"
+  current_dir="$basedir/current"
+
+  mkdir -p "$dir"
+  if [ -e "$current_dir" ] && [ "$(readlink "$current_dir")" != "$dir" ]; then
+    mv -fT "$current_dir" "$basedir/previous"
+  fi
+  ln -sT "$dir" "$current_dir" 2>/dev/null || true
+
+  file="$dir/$(date '+%H-%M-%S').png"
+  maim "$file"
+  sleep $INTERVAL
+done

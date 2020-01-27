@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+require 'tty-prompt'
+require 'ruby_is'
+require 'irb'
+prompt is memoized { TTY::Prompt.new }
+exit 0 unless system 'git branch 2>&1 >/dev/null'
+current_branch is memoized { `git branch|grep '*'|sed 's/^..//'`.chomp }
+all_branches are memoized { `git branch |sed 's/^..//'`.split("\n") }
+current_branch_idx is { all_branches.index current_branch }
+branch is { prompt.select("Branch:", all_branches, filter: true, default: current_branch_idx+1, per_page: 15) }
+begin
+  system 'git', 'checkout', branch
+rescue TTY::Reader::InputInterrupt
+  puts "\nNot switching branches"
+end

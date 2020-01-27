@@ -1,0 +1,3 @@
+#!/bin/sh
+exec dbus-send --system --dest=org.freedesktop.ModemManager1 --type=method_call --print-reply=literal /org/freedesktop/ModemManager1 org.freedesktop.ModemManager1.ScanDevices
+

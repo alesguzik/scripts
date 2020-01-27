@@ -1,0 +1,7 @@
+#!/bin/sh
+echo -n " New York: "; TZ=US/Eastern date
+echo -n "   London: "; TZ=Europe/London date
+echo -n "    Minsk: "; TZ=Europe/Minsk date
+echo -n "   Moscow: "; TZ=Europe/Moscow date
+#echo -n "    Tokyo: "; TZ=Asia/Tokyo date
+echo -n "   Sydney: "; TZ=Australia/Sydney date

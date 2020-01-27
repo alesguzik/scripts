@@ -1,0 +1,7 @@
+#!/bin/sh
+
+re="$1"
+shift
+git log -G"$re" "$@"
+# note to self:
+#   git log -GFoo --since=2009.1.1 --until=2010.1.1 -- path_containing_change

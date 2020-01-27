@@ -1,0 +1,43 @@
+#!/bin/bash
+function mkfile {
+  mktemp --suffix=.with-term.$1
+}
+
+function tmp-fifo {
+  chan="$(mkfile $1)"
+  rm "$chan"
+  mkfifo "$chan"
+  echo "$chan"
+}
+
+to_term_stdin="$(tmp-fifo in)"
+from_term_stdout="$(tmp-fifo out)"
+from_term_stderr="$(tmp-fifo err)"
+exit_code_file="$(mkfile exit)"
+args_file="$(mkfile args)"
+
+ruby -rjson -e 'puts JSON.generate ARGV' -- "$@" > "$args_file"
+cat "$from_term_stdout" > /dev/stdout &
+cat_stdout_pid="$!"
+cat "$from_term_stderr" > /dev/stderr &
+cat_stderr_pid="$!"
+
+urxvt -e ruby -rjson -e '
+  in,out,err,exit_code,args = ARGV
+  STDIN.reopen(in,"r")
+  STDOUT.reopen(out,"w")
+  STDERR.reopen(err,"w")
+  system "echo", *JSON.parse(File.read args)
+  puts "here"
+  sleep 5
+  File.write(exit_code, $?.to_i.to_s)
+' -- "$to_term_stdin" "$from_term_stdout" "$from_term_stderr" "$exit_code_file" "$args_file" #2>/dev/null 1>/dev/null &
+term_pid="$!"
+
+cat > "$to_term_stdin"
+wait "$term_pid"
+wait "$cat_stdout_pid"
+wait "$cat_stderr_pid"
+exit_code="$(cat "$exit_code_file")"
+rm "$exit_code_file" "$to_term_stdin" "$from_term_stdout" "$from_term_stderr"
+exit "$exit_code"

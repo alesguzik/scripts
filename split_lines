@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+while s = STDIN.gets
+  s.split(ARGV.first).each{|x| puts x}
+end

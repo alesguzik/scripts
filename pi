@@ -1,0 +1,5 @@
+#!/bin/sh
+while true; do
+  ping ${1:-8.8.8.8}
+  sleep 1
+done

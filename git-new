@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ -e .git ]; then
+  echo "$(pwd) already has git repository" && exit 1
+else
+  git init && git commit --allow-empty -m root-commit
+fi

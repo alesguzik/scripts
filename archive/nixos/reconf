@@ -1,0 +1,45 @@
+#!/bin/sh
+set -e
+
+cd /etc/nixos
+
+for arg in "$@"; do
+  case "$arg" in
+    "-u") DO_UPDATE=true ;;
+    "-e") DO_EDIT=true ;;
+  esac
+done
+
+ensure_branch () {
+  repo="$1"
+  branch="$2"
+  pushd $repo >/dev/null
+  if [ "$(git rev-parse --abbrev-ref HEAD)" != "$branch" ]; then
+    echo "$repo is not on master"
+    exit 255
+  fi
+  popd >/dev/null
+}
+
+update_repo () {
+  pushd $1 >/dev/null
+  git fetch --all --verbose
+  echo
+  git rebase
+  echo
+  popd > /dev/null
+}
+
+#ensure_branch nixpkgs master
+[ "$DO_EDIT" ] && vim configuration.nix
+
+if [ "$DO_UPDATE" ]; then
+  update_repo nixpkgs
+
+  for repo in my/{modules,overlays,repos}/*; do
+    ensure_branch "$repo" master
+    update_repo "$repo"
+  done
+fi
+
+exec sudo nixos-rebuild switch

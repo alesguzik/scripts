@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]
+then
+	LOCAL_PORT=22
+else
+	LOCAL_PORT="$1"
+fi
+
+if [ -z "$2" ]
+then
+	REMOTE_PORT=$((${LOCAL_PORT} + 2000))
+else
+	REMOTE_PORT="$2"
+fi
+
+exec ssh -Nv -R "${REMOTE_PORT}:localhost:${LOCAL_PORT}" me@niki.aguzik.net
+# add -f to fork to background

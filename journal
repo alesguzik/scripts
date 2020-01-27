@@ -1,0 +1,5 @@
+#!/bin/sh
+dir="$HOME/Documents/Xournal"
+mkdir -p "$dir"
+cd "$dir"
+find . -name '*.xoj'|zenity --list --column=Journal|xargs xournal

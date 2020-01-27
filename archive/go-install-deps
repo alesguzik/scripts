@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+while true; do
+  dep="$("$@" 2>&1 >/dev/null | grep 'panic: cannot find package' | sed -E 's/^[^"]+"//; s/".+$//')"
+  echo "installing '$dep'"
+  [ -n "$dep" ] || exit 1
+  go get "$dep"
+done
+echo done

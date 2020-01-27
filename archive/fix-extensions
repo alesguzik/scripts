@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+types = Dir.glob('*').map{|x| `file #{x}`.chomp}
+file_types = types.map do |t|
+  x = t.split(': ')
+  filename = x.shift
+  type = x.join(': ')
+  [filename, type]
+end
+
+file_types.each do |file,type|
+  if type.match(/JPEG image data/) and !file.match(/\.jpe?g/)
+    puts file
+  end
+end

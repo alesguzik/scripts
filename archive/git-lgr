@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# git lg in reverse order (top is early, bottom is new)
+(git lg "$@" ; echo)|tac|sed 's/\\/`/g; s/\//\\/g; s/`/\//g;'

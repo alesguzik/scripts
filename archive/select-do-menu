@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+require 'pry'
+require 'optionparser'
+
+opt_parser = OptionParser.new do |opts|
+  opts.on('-p','--preview [PREVIEW]'){|x| @preview = x }
+end
+opt_parser.parse! ARGV
+@process = ARGV.shift.split(' ')
+@preview ||= @process.join(' ')
+@preview += " {}"
+
+@history = [ ARGV ]
+loop do
+  @ins = @history.last
+  IO.popen([*@process, *@ins]){ |i| @outs = i.read.lines.map(&:chomp) }
+  @display = ['.'] + (@history.size > 1 ? ['..'] : []) + @outs + [':quit']
+  IO.popen(["fzf", "--reverse", "--preview", @preview], mode: 'r+') do |i|
+    i.write(@display.join("\n"))
+    i.close_write
+    @selected = i.read.lines.map(&:chomp)
+  end
+  case @selected
+  when [':quit'],[] then exit(0)
+  when ['.']  then # do nothing
+  when ['..'] then @history.pop
+  else @history.push @selected unless @history.last == @selected
+  end
+end
+

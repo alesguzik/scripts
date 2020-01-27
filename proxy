@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+if ARGV.empty?
+  puts "example: proxy 172.168.1.1:8080 to 192.168.122.68:8080 and 172.168.1.1:10123 to 192.168.122.1:10123"
+  exit 0
+end
+require 'uri'
+forwards = Hash[*ARGV.map{|x| uri = URI.parse("tcp://#{x}") rescue nil; uri.port && uri }.compact]
+
+def socat_cmd(from,to)
+  "socat TCP-LISTEN:#{from.port},fork,reuseaddr,bind=#{from.host} TCP:#{to.host}:#{to.port}"
+end
+
+puts "Forwards: {"
+forwards.each{|kv| puts "  %-20s => %-20s" % kv.map{|a| "#{a.host}:#{a.port}"} }
+puts "}"
+
+cmd = forwards.map {|from, to| socat_cmd(from,to)}.join("|")
+#puts cmd
+exec(cmd)

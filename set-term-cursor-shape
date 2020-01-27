@@ -1,0 +1,17 @@
+#!/bin/sh
+if [ -z "$1" ]; then
+  cat <<EOF
+
+  Usage: $(basename "$0") <cursor-number>
+
+    1 - block blinking
+    2 - block static
+    3 - underline blinking
+    4 - underline static
+    5 - bar blinking
+    6 - bar static
+
+EOF
+  exit 1
+fi
+echo -e "\033[$1 q" > /dev/tty

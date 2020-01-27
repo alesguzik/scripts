@@ -1,0 +1,16 @@
+#!/bin/sh
+function detect {
+  lsusb | grep '05ac:0274' >/dev/null && echo 'mac-book-pro-15'
+  lsusb | grep '258a:0111' >/dev/null && echo 'gpd-pocket'
+  lsusb | grep '258a:000c' >/dev/null && echo 'gpd-pocket-2'
+  lspci | grep 'GP107GLM'  >/dev/null && echo 'dell-atlassian'
+  lsusb | grep '138a:0097' >/dev/null && echo 'x1-yoga'
+  lspci | grep 'SM981/PM981' > /dev/null && echo 'desktop'
+}
+
+if [ "$(detect|wc -l)" = 1 ]; then
+  detect
+  exit 0
+else
+  exit 1
+fi

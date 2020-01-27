@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /home/me/p/fork/AAXtoMP3/AAXtoMP3 --flac ad463007 "$@"
